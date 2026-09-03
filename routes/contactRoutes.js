@@ -1,0 +1,1 @@
+import express from'express';import{list,getOne,create,update,remove}from'../controllers/contactController.js';import{protect}from'../middleware/authMiddleware.js';const router=express.Router();router.post('/',create);router.get('/',protect,list);router.get('/:id',protect,getOne);router.put('/:id',protect,update);router.delete('/:id',protect,remove);export default router;

@@ -109,6 +109,10 @@ app.use(errorHandler);
 // Start Server
 // ================================
 
+app.get("/", (req, res) => {
+  res.send("Hexsoftware Backend is running");
+});
+
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => {

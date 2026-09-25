@@ -29,7 +29,10 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", process.env.CLIENT_URL].filter(Boolean),
+    origin: [
+      "http://localhost:5173",
+      "https://hex-software-frontend-uhac.vercel.app",
+    ],
     credentials: true,
   }),
 );

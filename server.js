@@ -2,8 +2,6 @@ import "dotenv/config";
 
 import express from "express";
 import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
 
 import connectDB from "./config/db.js";
 
@@ -20,14 +18,10 @@ import jobApplicationRoutes from "./routes/jobApplicationRoutes.js";
 
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
-// Connect MongoDB
+// MongoDB
 await connectDB();
 
 const app = express();
-
-// Required because we're using ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // ================================
 // Middleware
@@ -35,18 +29,24 @@ const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: ["http://localhost:5173", process.env.CLIENT_URL].filter(Boolean),
     credentials: true,
   }),
 );
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  express.urlencoded({
-    extended: true,
-  }),
-);
+// ================================
+// Root
+// ================================
+
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Hexsoftware Backend is running",
+  });
+});
 
 // ================================
 // API Health Check
@@ -64,54 +64,26 @@ app.get("/api", (req, res) => {
 // ================================
 
 app.use("/api/services", serviceRoutes);
-
 app.use("/api/projects", projectRoutes);
-
 app.use("/api/jobs", jobRoutes);
-
 app.use("/api/internships", internshipRoutes);
-
 app.use("/api/applications", applicationRoutes);
-
 app.use("/api/certificates", certificateRoutes);
-
 app.use("/api/testimonials", testimonialRoutes);
-
 app.use("/api/contact", contactRoutes);
-
 app.use("/api/users", userAuthRoutes);
-
 app.use("/api/job-applications", jobApplicationRoutes);
-
-// ================================
-// React Frontend
-// ================================
-
-const frontendPath = path.join(__dirname, "../frontend/dist");
-
-app.use(express.static(frontendPath));
-
-// React Router fallback
-// Express 5 compatible
-app.get("/*splat", (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
-});
 
 // ================================
 // Error Middleware
 // ================================
 
 app.use(notFound);
-
 app.use(errorHandler);
 
 // ================================
-// Start Server
+// Server
 // ================================
-
-app.get("/", (req, res) => {
-  res.send("Hexsoftware Backend is running");
-});
 
 const port = process.env.PORT || 5000;
 
